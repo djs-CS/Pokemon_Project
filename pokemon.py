@@ -97,18 +97,99 @@ class Pokemon:
 
 
 
+    def attack(self, value, opponent):
 
+        if isinstance(opponent, Pokemon) and opponent != self:
+
+            print("{self} attacked {opponent}!".format(self = self.name, opponent = opponent.name))
+
+
+
+            if self.type.check_effektive(opponent.type) == True:
+                damage = value * 2
+
+                print("The attack was effektive!")
+
+            elif self.type.check_weak_against(opponent.type) == True:
+                damage = int(value/2) 
+
+                print("The attack wasn't effektive.")
+
+
+            else:
+                damage = value
+
+              
+
+            opponent.loose_health(damage)
+
+        else:
+            raise ValueError
+
+
+class Element:
+
+    def __init__(self, name, effektive_against = [], weak_against = []):
         
-
+        self.name = name
+        self.effektive_against = effektive_against
+        self.weak_against = weak_against
         
+    def __str__(self):
+        return self.name
 
-test = Pokemon("charizard", 50, "fire")
+    def __repr__(self):
 
-test.loose_health(80)
+        string_effektive = [str(element) for element in self.effektive_against]
+        string_weak = [str(element) for element in self.weak_against]
+        
+        return "Name: {type_}, effektive against: {effektive_list}, weak against: {weak_list}".format(type_ = self.name, effektive_list = string_effektive, weak_list = string_weak)
 
-test.heal(40)
+    def add_effektive(self, type_):
+        self.effektive_against.append(type_)
 
-test.revive()
-print(test.knocked_out)
+    def add_weak_against(self, type_):
+        self.weak_against.append(type_)
 
-print(test.current_health)
+    def check_effektive(self, other):
+
+        if other in self.effektive_against:
+            return True
+
+        else:
+            return False
+
+    def check_weak_against(self, other):
+        if other in self.weak_against:
+            return True
+        else:
+            return False
+        
+# Creating elements
+
+water = Element("Water")
+
+fire = Element("Fire", [], [water])
+
+grass = Element("Grass", [water], [fire])
+
+fire.add_effektive(grass)
+
+water.add_effektive(fire)
+water.add_weak_against(grass)
+
+
+pokA = Pokemon("A", 100, water)
+pokB = Pokemon("B", 100, fire)
+pokC = Pokemon("C", 100, fire)
+
+pokB.attack(20, pokC)
+
+pokA.attack(40, pokC)
+
+
+
+
+
+
+
